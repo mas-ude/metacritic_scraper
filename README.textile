@@ -1,0 +1,11 @@
+A modified scraper to collate video game review data from Metacritic.
+
+Data includes:
+
+-Title
+-Publisher
+-Release Date
+-Metascore
+-ESRB Rating
+
+Currently set to: PSP
