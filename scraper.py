@@ -3,10 +3,11 @@ import scraperwiki
 import lxml.html
 import re
 
-types = ['0','1','2','3','4','5','6','7','8','9','10']
+#types = ['0','1','2','3','4','5','6','7','8','9','10']
+types = range(0,160)
 for type in types:
-    url = "http://www.metacritic.com/browse/games/release-date/available/gamecube/name?hardware=all&view=detailed&page=%s" % type
-    html = scraperwiki.scrape(url)
+    url = "http://www.metacritic.com/browse/games/release-date/available/pc/name?hardware=all&view=detailed&page=%s" % str(type)
+    html = scraperwiki.scrape(url, user_agent="Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1")
     root = lxml.html.fromstring(html)
     products = root.xpath("//ol[@class='list_products list_product_summaries']/li")
     for product in products:
