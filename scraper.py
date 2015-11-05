@@ -14,7 +14,7 @@ csv_writer.writeheader()
 
 page = 0
 while True:
-    url = "http://www.metacritic.com/browse/games/release-date/available/pc/name?hardware=all&view=detailed&page=%s" + str(page)
+    url = "http://www.metacritic.com/browse/games/release-date/available/pc/name?hardware=all&view=detailed&page=" + str(page)
     request = urllib2.Request(url, headers={"User-agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"})
     html = urllib2.urlopen(request).read()
     root = lxml.html.fromstring(html)
@@ -30,7 +30,7 @@ while True:
         pass
 
     # No, not done yet. Continue with products
-    products = root.xpath("//ol[@class='list_products list_product_summaries']/li")
+    products = root.xpath("//div[@id='main']/div/div/div/ol[@class='list_products list_product_summaries']/li")
 
     for product in products:
         data = {}
@@ -69,9 +69,6 @@ while True:
             data['score'] = ''
         else:
             data['score'] = product_score[0]
-
-        #scraperwiki.sqlite.save(unique_keys=['title','url','release','genre','publisher'], data=data)
-        #print data
 
         csv_writer.writerow(data)
 
