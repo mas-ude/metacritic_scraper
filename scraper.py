@@ -8,7 +8,7 @@ import csv
 # This is where we will output to
 output_file = open('metacritic.csv', 'wb')
 csv_writer = csv.DictWriter(output_file, fieldnames=["user_score", 
-        "publisher", "title", "url", "genre", "score", "release"])
+        "publisher", "title", "genre", "score", "release"], delimiter=';')
 csv_writer.writeheader()
 
 
@@ -35,7 +35,6 @@ while True:
     for product in products:
         data = {}
         data['title'] = str(product.xpath("div/div/div/div/div/h3[@class='product_title']/a/text()")[0])
-        data['url'] = str(product.xpath("div/div/div/div[@class='main_stats']/div[@class='basic_stat product_title']/h3[@class='product_title']/a/@href")[0])
 
         product_release = product.xpath("div/div/div/div[@class='more_stats extended_stats']/ul[@class='more_stats']/li[@class='stat release_date']/span[@class='data']/text()")
         if len(product_release) != 1:
@@ -47,7 +46,7 @@ while True:
         if len(genre) != 1:
             data['genre'] = ''
         else:
-            genre = str(genre[0]).replace('\n', '').replace('\r', '').replace('\t','')
+            genre = str(genre[0]).replace('\n', '').replace('\r', '').replace('\t','').replace(' ', '').strip()
             data['genre'] = genre
 
         user_score = product.xpath("div/div/div/div[@class='more_stats extended_stats']/ul[@class='more_stats']/li[@class='stat product_avguserscore']/span[2]/text()")
