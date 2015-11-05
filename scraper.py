@@ -1,13 +1,16 @@
-# Metacritic Scraper
-import scraperwiki
+## Metacritic Scraper
+
+import urllib2
 import lxml.html
 import re
+import csv
 
 #types = ['0','1','2','3','4','5','6','7','8','9','10']
 types = range(0,1)
 for type in types:
     url = "http://www.metacritic.com/browse/games/release-date/available/pc/name?hardware=all&view=detailed&page=%s" % str(type)
-    html = scraperwiki.scrape(url, user_agent="Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1")
+    request = urllib2.Request(url, headers={"User-agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"})
+    html = urllib2.urlopen(request).read()
     root = lxml.html.fromstring(html)
     products = root.xpath("//ol[@class='list_products list_product_summaries']/li")
     for product in products:
@@ -48,4 +51,13 @@ for type in types:
         else:
             data['score'] = product_score[0]
 
-        scraperwiki.sqlite.save(unique_keys=['title','url','release','genre','publisher'], data=data)
+        #scraperwiki.sqlite.save(unique_keys=['title','url','release','genre','publisher'], data=data)
+        #print data
+
+        with open('metacritic.csv', 'wb') as f:
+            writer = csv.DictWriter(f, fieldnames=["user_score", "publisher", "title", "url", "genre", "score", "release"])
+            writer.writeheader()
+            for rowdata in data:
+                writer.writerow(rowdata)
+
+
