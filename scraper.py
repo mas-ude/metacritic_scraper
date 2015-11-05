@@ -2,8 +2,8 @@
 
 import urllib2
 import lxml.html
-import re
 import csv
+
 
 # This is where we will output to
 output_file = open('metacritic.csv', 'wb')
@@ -11,14 +11,27 @@ csv_writer = csv.DictWriter(output_file, fieldnames=["user_score",
         "publisher", "title", "url", "genre", "score", "release"])
 csv_writer.writeheader()
 
-#types = ['0','1','2','3','4','5','6','7','8','9','10']
-types = range(0,1)
-for type in types:
-    url = "http://www.metacritic.com/browse/games/release-date/available/pc/name?hardware=all&view=detailed&page=%s" % str(type)
+
+page = 0
+while True:
+    url = "http://www.metacritic.com/browse/games/release-date/available/pc/name?hardware=all&view=detailed&page=%s" + str(page)
     request = urllib2.Request(url, headers={"User-agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"})
     html = urllib2.urlopen(request).read()
     root = lxml.html.fromstring(html)
+
+    # Have we reached the end of the search results already?
+    # If we have, we'll see the end marker. If not, the xpath 
+    # selects an empty list.
+    expected_end_marker = root.xpath("//div[@class='module products_module list_product_summaries_module ']/div/div/p[@class='no_data']/text()")
+    try:
+        if expected_end_marker[0] == "No Results Found":
+            break
+    except Exception, e:
+        pass
+
+    # No, not done yet. Continue with products
     products = root.xpath("//ol[@class='list_products list_product_summaries']/li")
+
     for product in products:
         data = {}
         data['title'] = str(product.xpath("div/div/div/div/div/h3[@class='product_title']/a/text()")[0])
@@ -62,4 +75,6 @@ for type in types:
 
         csv_writer.writerow(data)
 
+    # Do the next page of results
+    page += 1
 
