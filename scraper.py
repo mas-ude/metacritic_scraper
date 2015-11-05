@@ -5,6 +5,12 @@ import lxml.html
 import re
 import csv
 
+# This is where we will output to
+output_file = open('metacritic.csv', 'wb')
+csv_writer = csv.DictWriter(output_file, fieldnames=["user_score", 
+        "publisher", "title", "url", "genre", "score", "release"])
+csv_writer.writeheader()
+
 #types = ['0','1','2','3','4','5','6','7','8','9','10']
 types = range(0,1)
 for type in types:
@@ -32,7 +38,7 @@ for type in types:
             data['genre'] = genre
 
         user_score = product.xpath("div/div/div/div[@class='more_stats extended_stats']/ul[@class='more_stats']/li[@class='stat product_avguserscore']/span[2]/text()")
-        if len(user_score) != 1or user_score[0] == 'tbd':
+        if len(user_score) != 1 or user_score[0] == 'tbd':
             data['user_score'] = ''
         else:
             data['user_score'] = str(user_score[0])
@@ -54,10 +60,6 @@ for type in types:
         #scraperwiki.sqlite.save(unique_keys=['title','url','release','genre','publisher'], data=data)
         #print data
 
-        with open('metacritic.csv', 'wb') as f:
-            writer = csv.DictWriter(f, fieldnames=["user_score", "publisher", "title", "url", "genre", "score", "release"])
-            writer.writeheader()
-            for rowdata in data:
-                writer.writerow(rowdata)
+        csv_writer.writerow(data)
 
 
